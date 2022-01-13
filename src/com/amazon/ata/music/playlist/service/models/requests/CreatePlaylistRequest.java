@@ -79,7 +79,6 @@ public class CreatePlaylistRequest {
         private List<String> tags;
 
         private Builder() {
-
         }
 
         public Builder withName(String nameToUse) {

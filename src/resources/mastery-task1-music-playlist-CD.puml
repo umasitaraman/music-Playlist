@@ -1,1 +1,97 @@
-PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+'PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+@startuml
+
+' implements ..|>
+' extends <|--
+' has-a relation  o-- (when one class has an object of the other class)
+' --> when a class instantiates another class
+
+RuntimeException <|-- AlbumTrackNotFoundException
+RuntimeException <|-- InvalidAttributeValueException
+RuntimeException <|-- PlaylistNotFoundException
+PlaylistDao --o AddSongToPlaylistActivity
+AlbumTrackDao --o AddSongToPlaylistActivity
+PlaylistDao --o CreatePlaylistActivity
+PlaylistDao --o GetPlaylistActivity
+PlaylistDao --o GetPlaylistSongsActivity
+PlaylistDao --o UpdatePlaylistActivity
+DynamoDBMapper o-- AlbumTrackDao
+DynamoDBMapper o-- PlaylistDao
+AlbumTrack o-- Playlist
+AddSongToPlaylistActivity ..|> RequestHandler
+CreatePlaylistActivity ..|> RequestHandler
+GetPlaylistActivity ..|> RequestHandler
+GetPlaylistSongsActivity ..|> RequestHandler
+UpdatePlaylistActivity ..|> RequestHandler
+
+Interface  RequestHandler {
+}
+
+class AddSongToPlaylistActivity {
+    +handleRequest(AddSongToPlaylistRequest, Context) : AddSongToPlaylistResult
+}
+
+class CreatePlaylistActivity  {
+    + handleRequest({final} CreatePlaylistRequest) : CreatePlaylistResult
+}
+
+class GetPlaylistActivity {
+    + handleRequest({final} GetPlaylistRequest) : GetPlaylistResult
+}
+
+class GetPlaylistSongsActivity {
+    + handleRequest(final GetPlaylistSongsRequest getPlaylistSongsRequest, Context context) : GetPlaylistSongsResult
+}
+
+class UpdatePlaylistActivity {
+    + handleRequest(final UpdatePlaylistRequest updatePlaylistRequest, Context context) : UpdatePlaylistResult
+}
+
+'@DynamoDBTable(tableName = "album_tracks")
+class AlbumTrack {
+    - @DynamoDBHashKey asin : String
+    - @DynamoDBRangeKey trackNumber : Integer
+    - albumName : String
+    - songTitle : String
+
+    + getAsin() : String             @DynamoDBHashKey
+    + getTrackNumber() : String      @DynamoDBRangeKey
+}
+
+'@DynamoDBTable(tableName = "playlists")
+class Playlist {
+    - @DynamoDBHashKey id : String
+    - name : String
+    - customerId : String
+    - songCount : Integer
+    - tags : Set<String>
+    - songList : List<AlbumTrack>
+
+    + getId() : String                  @DynamoDBHashKey
+    + getSongList() : List<AlbumTrack>  @DynamoDBAttribute
+    + setSongList(List<AlbumTrack> songList)
+}
+
+class AlbumTrackDao {
+    - dynamoDbMapper : DynamoDBMapper
+
+    + AlbumTrackDao(DynamoDBMapper dynamoDbMapper)
+}
+
+class PlaylistDao {
+    - dynamoDbMapper : DynamoDBMapper
+
+    + PlaylistDao(DynamoDBMapper dynamoDbMapper)
+    + getPlaylist(String id) : Playlist
+}
+
+class AlbumTrackNotFoundException {
+}
+
+class InvalidAttributeValueException {
+}
+
+class PlaylistNotFoundException {
+}
+
+@enduml

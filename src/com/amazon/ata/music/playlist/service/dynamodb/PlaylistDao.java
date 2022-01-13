@@ -32,7 +32,10 @@ public class PlaylistDao {
         if (playlist == null) {
             throw new PlaylistNotFoundException("Could not find playlist with id " + id);
         }
-
         return playlist;
+    }
+
+    public void savePlaylist(Playlist playlist) {
+        this.dynamoDbMapper.save(playlist);
     }
 }

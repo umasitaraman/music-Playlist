@@ -123,7 +123,6 @@ public class PlaylistModel {
             this.tags = tagsToUse;
             return this;
         }
-
         public PlaylistModel build() {return new PlaylistModel(this);}
     }
 }

@@ -1,14 +1,21 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
 import com.amazon.ata.music.playlist.service.models.requests.CreatePlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.CreatePlaylistResult;
 import com.amazon.ata.music.playlist.service.models.PlaylistModel;
 import com.amazon.ata.music.playlist.service.dynamodb.PlaylistDao;
 
+import com.amazon.ata.music.playlist.service.util.MusicPlaylistServiceUtils;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Implementation of the CreatePlaylistActivity for the MusicPlaylistService's CreatePlaylist API.
@@ -45,8 +52,22 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
     public CreatePlaylistResult handleRequest(final CreatePlaylistRequest createPlaylistRequest, Context context) {
         log.info("Received CreatePlaylistRequest {}", createPlaylistRequest);
 
+        if(!MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getCustomerId()) || !MusicPlaylistServiceUtils.isValidString(createPlaylistRequest.getName())) {
+            throw new InvalidAttributeValueException();
+        }
+
+        List<String> newTags = new ArrayList<>();
+
+        if (createPlaylistRequest.getTags() != null) {
+            newTags = createPlaylistRequest.getTags();
+        }
+
         return CreatePlaylistResult.builder()
-                .withPlaylist(new PlaylistModel())
+                .withPlaylist(PlaylistModel.builder().withId(MusicPlaylistServiceUtils.generatePlaylistId()).build())
+                .withCustomerID(createPlaylistRequest.getCustomerId())
+                .withName(createPlaylistRequest.getName())
+                .withTags(newTags)
                 .build();
     }
 }
+
