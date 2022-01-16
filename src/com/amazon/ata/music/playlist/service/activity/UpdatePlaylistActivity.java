@@ -1,5 +1,7 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeChangeException;
 import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
 import com.amazon.ata.music.playlist.service.exceptions.PlaylistNotFoundException;
 import com.amazon.ata.music.playlist.service.models.PlaylistModel;
@@ -53,18 +55,20 @@ public class UpdatePlaylistActivity implements RequestHandler<UpdatePlaylistRequ
     public UpdatePlaylistResult handleRequest(final UpdatePlaylistRequest updatePlaylistRequest, Context context) {
         log.info("Received UpdatePlaylistRequest {}", updatePlaylistRequest);
 
+        Playlist playlistDB = playlistDao.getPlaylist(updatePlaylistRequest.getId());
 
             if (updatePlaylistRequest.getId() == null) {
                 throw new PlaylistNotFoundException();
             } else if (!MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getCustomerId()) ||
                     !MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getName())) {
                 throw new InvalidAttributeValueException();
+            } else if (!updatePlaylistRequest.getCustomerId().equals(playlistDB.getCustomerId())) {
+                throw new InvalidAttributeChangeException();
             }
-
 
         return UpdatePlaylistResult.builder()
                 .withPlaylist(PlaylistModel.builder()
-                        .withId(MusicPlaylistServiceUtils.generatePlaylistId())
+                        .withId(updatePlaylistRequest.getId())
                         .withCustomerId(updatePlaylistRequest.getCustomerId())
                         .withName(updatePlaylistRequest.getName())
                         .build())
