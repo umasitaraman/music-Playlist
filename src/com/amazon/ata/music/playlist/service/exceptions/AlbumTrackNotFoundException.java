@@ -4,7 +4,7 @@ package com.amazon.ata.music.playlist.service.exceptions;
  * Exception to throw when a given AlbumTrack ASIN and track number is not found
  * in the database.
  */
-public class AlbumTrackNotFoundException extends RuntimeException {
+public class AlbumTrackNotFoundException extends Exception {
     private static final long serialVersionUID = -1230785223023147290L;
 
     /**

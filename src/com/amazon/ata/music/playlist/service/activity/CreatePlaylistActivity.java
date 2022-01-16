@@ -63,10 +63,12 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
         }
 
         return CreatePlaylistResult.builder()
-                .withPlaylist(PlaylistModel.builder().withId(MusicPlaylistServiceUtils.generatePlaylistId()).build())
-                .withCustomerID(createPlaylistRequest.getCustomerId())
-                .withName(createPlaylistRequest.getName())
-                .withTags(newTags)
+                .withPlaylist(PlaylistModel.builder()
+                        .withId(MusicPlaylistServiceUtils.generatePlaylistId())
+                        .withCustomerId(createPlaylistRequest.getCustomerId())
+                        .withName(createPlaylistRequest.getName())
+                         .withTags(newTags)
+                        .build())
                 .build();
     }
 }

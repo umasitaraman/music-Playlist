@@ -1,0 +1,28 @@
+{
+  "playlists": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {
+            "S": "PPT01"
+          },
+          "name": {
+            "S": "PPT01 playlist"
+          },
+          "customerId": {
+            "S": "1"
+          },
+          "songCount": {
+            "N": "1"
+          },
+          "tags": {
+            "S": "1st tag"
+          },
+          "songList": {
+            "S": "All Mirrors"
+          }
+        }
+      }
+    }
+  ]
+}

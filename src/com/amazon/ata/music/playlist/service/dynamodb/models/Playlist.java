@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -70,6 +71,7 @@ public class Playlist {
         this.songCount = songCount;
     }
 
+    //@DynamoDBTypeConverted(converter = AlbumTrackLinkedListConverter.class)
     @DynamoDBAttribute(attributeName = "tags")
     public Set<String> getTags() {
         return tags;
@@ -77,6 +79,18 @@ public class Playlist {
 
     public void setTags(Set<String> tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public String toString() {
+        return "Playlist{" +
+                "id='" + id + '\'' +
+                ", songList=" + songList +
+                ", name='" + name + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", songCount=" + songCount +
+                ", tags=" + tags +
+                '}';
     }
 }
 

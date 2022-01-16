@@ -1,0 +1,76 @@
+{
+  "playlists": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {
+            "S": "PPT01"
+          },
+          "name": {
+            "S": "PPT01 playlist"
+          },
+          "customerId": {
+            "S": "1"
+          },
+          "songCount": {
+            "N": "1"
+          },
+          "tags": {
+            "SS": ["1st tag"]
+          },
+          "songList": {
+            "SS": ["All Mirrors"]
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {
+            "S": "PPT02"
+          },
+          "name": {
+            "S": "PPT02 playlist"
+          },
+          "customerId": {
+            "S": "2"
+          },
+          "songCount": {
+            "N": "2"
+          },
+          "tags": {
+            "SS": ["1st tag", "2nd tag"]
+          },
+          "songList": {
+            "SS": ["Money", "All Mirrors"]
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {
+            "S": "PPT03"
+          },
+          "name": {
+            "S": "PPT03 playlist"
+          },
+          "customerId": {
+            "S": "3"
+          },
+          "songCount": {
+            "N": "3"
+          },
+          "tags": {
+            "SS": ["1st tag", "2nd tag", "3rd tag"]
+          },
+          "songList": {
+            "SS": ["whereImFrom", "wahoo", "All Mirrors"]
+          }
+        }
+      }
+    }
+  ]
+}

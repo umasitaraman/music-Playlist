@@ -9,6 +9,7 @@
 RuntimeException <|-- AlbumTrackNotFoundException
 RuntimeException <|-- InvalidAttributeValueException
 RuntimeException <|-- PlaylistNotFoundException
+RuntimeException <|-- InvalidAttributeChangeException
 PlaylistDao --o AddSongToPlaylistActivity
 AlbumTrackDao --o AddSongToPlaylistActivity
 PlaylistDao --o CreatePlaylistActivity
@@ -89,6 +90,9 @@ class AlbumTrackNotFoundException {
 }
 
 class InvalidAttributeValueException {
+}
+
+class InvalidAttributeChangeException {
 }
 
 class PlaylistNotFoundException {

@@ -5,6 +5,8 @@ import com.amazon.ata.music.playlist.service.exceptions.PlaylistNotFoundExceptio
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
+import java.util.Objects;
+
 /**
  * Accesses data for a playlist using {@link Playlist} to represent the model in DynamoDB.
  */
@@ -19,6 +21,7 @@ public class PlaylistDao {
     public PlaylistDao(DynamoDBMapper dynamoDbMapper) {
         this.dynamoDbMapper = dynamoDbMapper;
     }
+
 
     /**
      * Returns the {@link Playlist} corresponding to the specified id.
@@ -37,5 +40,25 @@ public class PlaylistDao {
 
     public void savePlaylist(Playlist playlist) {
         this.dynamoDbMapper.save(playlist);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlaylistDao)) return false;
+        PlaylistDao that = (PlaylistDao) o;
+        return Objects.equals(dynamoDbMapper, that.dynamoDbMapper);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dynamoDbMapper);
+    }
+
+    @Override
+    public String toString() {
+        return "PlaylistDao{" +
+                "dynamoDbMapper=" + dynamoDbMapper +
+                '}';
     }
 }
