@@ -5,7 +5,7 @@ package com.amazon.ata.music.playlist.service.exceptions;
  */
 public class InvalidAttributeChangeException extends InvalidAttributeException {
 
-    private static final long serialVersionUID = 8007453316698012851L;
+    private static final long serialVersionUID = -8695629412158415465L;
 
     /**
      * Exception with no message or cause.

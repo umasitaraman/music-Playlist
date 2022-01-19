@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,12 +18,12 @@ import java.util.Set;
 @DynamoDBTable(tableName = "playlists")
 public class Playlist {
     private String id;
-    private List<AlbumTrack> songList;
+    private List<AlbumTrack> songList = new ArrayList<>();
 
     private String name;
     private String customerId;
-    private int songCount;
-    Set<String> tags;
+    private Integer songCount;
+    private Set<String> tags;
 
     @DynamoDBHashKey(attributeName = "id")
     public String getId() {
@@ -63,11 +64,11 @@ public class Playlist {
     }
 
     @DynamoDBAttribute(attributeName = "songCount")
-    public int getSongCount() {
+    public Integer getSongCount() {
         return songCount;
     }
 
-    public void setSongCount(int songCount) {
+    public void setSongCount(Integer songCount) {
         this.songCount = songCount;
     }
 

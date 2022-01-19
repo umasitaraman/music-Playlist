@@ -30,17 +30,28 @@ As with `PlaylistModel` for previous APIs, we must convert our
 `AlbumTrack` data model to the API-defined `SongModel`. With
 the updated `AlbumTrack` class, create a `toSongModel` method
 in `ModelConverter` to map the new fields from the `AlbumTrack`
-object to the `SongModel` object. Update `ModelConverterTest` as
-appropriate.
+object to the `SongModel` object.
+
+===============================DONE TILL HERE==================================
+
+Update `ModelConverterTest` as appropriate. --> Need to figure this one out
+
+===============================DONE TILL HERE==================================
+
 
 Once done, we can implement `AddSongToPlaylistActivity`'s 
 `handleRequest` method to fetch the album information and add
 it to the `Playlist`'s songList, save the updated `Playlist`
 and return the updated song list from the API. Update the
 Activity to use the `ModelConverter` to convert the
-`AlbumTrack`'s to `SongModel`'s as needed. Make the change,
-and then uncomment and run the `AddSongToPlaylistActivityTest`
-unit tests.
+`AlbumTrack`'s to `SongModel`'s as needed.
+===============================DONE TILL HERE==================================
+
+Make the change,
+and then uncomment and run the `AddSongToPlaylistActivityTest` 
+unit tests. ----> need to fix this
+
+===============================DONE TILL HERE==================================
 
 Once your tests pass, upload your code to Lambda and ensure it works.
 

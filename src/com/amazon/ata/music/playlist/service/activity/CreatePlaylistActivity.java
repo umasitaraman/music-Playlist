@@ -1,5 +1,8 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.aws.dynamodb.DynamoDbClientProvider;
+import com.amazon.ata.music.playlist.service.converters.ModelConverter;
+import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
 import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
 import com.amazon.ata.music.playlist.service.models.requests.CreatePlaylistRequest;
 import com.amazon.ata.music.playlist.service.models.results.CreatePlaylistResult;
@@ -7,13 +10,14 @@ import com.amazon.ata.music.playlist.service.models.PlaylistModel;
 import com.amazon.ata.music.playlist.service.dynamodb.PlaylistDao;
 
 import com.amazon.ata.music.playlist.service.util.MusicPlaylistServiceUtils;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +28,12 @@ import java.util.regex.Pattern;
  */
 public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequest, CreatePlaylistResult> {
     private final Logger log = LogManager.getLogger();
-    private final PlaylistDao playlistDao;
+    private final DynamoDBMapper dynamoDbMapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_EAST_2));
+    private PlaylistDao playlistDao = new PlaylistDao(dynamoDbMapper);
+
+    public CreatePlaylistActivity() {
+
+    }
 
     /**
      * Instantiates a new CreatePlaylistActivity object.
@@ -34,6 +43,7 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
     public CreatePlaylistActivity(PlaylistDao playlistDao) {
         this.playlistDao = playlistDao;
     }
+
 
     /**
      * This method handles the incoming request by persisting a new playlist
@@ -56,20 +66,24 @@ public class CreatePlaylistActivity implements RequestHandler<CreatePlaylistRequ
             throw new InvalidAttributeValueException();
         }
 
-        List<String> newTags = new ArrayList<>();
+        Playlist playlist = new Playlist();
 
-        if (createPlaylistRequest.getTags() != null) {
-            newTags = createPlaylistRequest.getTags();
+        List<String> tags = createPlaylistRequest.getTags();
+
+        playlist.setId(MusicPlaylistServiceUtils.generatePlaylistId());
+        playlist.setName(createPlaylistRequest.getName());
+        playlist.setCustomerId(createPlaylistRequest.getCustomerId());
+        if (tags != null) {
+            playlist.setTags(new HashSet<>(tags));
         }
+        playlist.setSongCount(0);
+        playlist.setSongList(new ArrayList<>());
 
-        return CreatePlaylistResult.builder()
-                .withPlaylist(PlaylistModel.builder()
-                        .withId(MusicPlaylistServiceUtils.generatePlaylistId())
-                        .withCustomerId(createPlaylistRequest.getCustomerId())
-                        .withName(createPlaylistRequest.getName())
-                         .withTags(newTags)
-                        .build())
-                .build();
+        playlistDao.savePlaylist(playlist);
+
+        PlaylistModel playlistModel = new ModelConverter().toPlaylistModel(playlist);
+
+        return CreatePlaylistResult.builder().withPlaylist(playlistModel).build();
     }
 }
 

@@ -13,6 +13,8 @@ import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -47,7 +49,8 @@ public class UpdatePlaylistActivityTest {
         startingPlaylist.setSongCount(0);
 
         when(playlistDao.getPlaylist(id)).thenReturn(startingPlaylist);
-        //when(playlistDao.savePlaylist(startingPlaylist)).thenReturn(startingPlaylist);
+        when(playlistDao.savePlaylist(startingPlaylist)).thenReturn(startingPlaylist);
+        //doNothing().when(playlistDao).savePlaylist(isA(Playlist.class));
 
 
         // WHEN

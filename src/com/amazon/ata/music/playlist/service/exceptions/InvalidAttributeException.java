@@ -1,6 +1,8 @@
 package com.amazon.ata.music.playlist.service.exceptions;
 
 public class InvalidAttributeException extends RuntimeException {
+
+    private static final long serialVersionUID = 1634318900518268445L;
     public InvalidAttributeException() {
         super();
     }

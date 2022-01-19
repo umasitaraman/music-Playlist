@@ -2,18 +2,21 @@ package com.amazon.ata.music.playlist.service.dynamodb;
 import com.amazon.ata.aws.dynamodb.DynamoDbClientProvider;
 import com.amazon.ata.music.playlist.service.dynamodb.models.AlbumTrack;
 import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
+import com.amazon.ata.music.playlist.service.exceptions.AlbumTrackNotFoundException;
+import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
+import com.amazon.ata.music.playlist.service.exceptions.PlaylistNotFoundException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class PlayListDaoTest {
@@ -27,43 +30,24 @@ public class PlayListDaoTest {
     public void setUp() {
         dynamoDbMapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_EAST_2));
         playlistDao = new PlaylistDao(dynamoDbMapper);
-        //deleteTestData();
+        deleteTestData();
     }
 
-//    @AfterEach
-//    private void teardown() {
-//        deleteTestData();
-//    }
-
-
-    @Test
-    public void getPlaylist_thatExists_returnsExpected() {
-        String playListID = "PPT04";
-        String playListName = "PPT04 playlist";
-        String customerId = "1";
-        int songCount = 1;
-
-        Playlist playlist1 = playlistDao.getPlaylist(playListID);
-        
-
-        assertEquals(customerId, playlist1.getCustomerId(), "Expect getting playlist after saving it " +
-                "to return same playlist values");
-        assertEquals(playListName, playlist1.getName(), "Expect getting playlist after saving it to " +
-                "return same playlist values");
-        assertEquals(playListID, playlist1.getId(), "Expect getting playlist after saving it to " +
-                "return same playlist values");
-        assertEquals(songCount, playlist1.getSongCount(), "Expect getting playlist after saving it to " +
-                "return same playlist values");
+    @AfterEach
+    private void teardown() {
+        deleteTestData();
     }
 
     @Test
-    public void savePlaylist_newPlayList_returnsAsExpected() {
+    public void savePlaylist_newPlayList_returnsAsExpected() throws AlbumTrackNotFoundException {
         String playlistId = "PPT05";
         String playListName = "PPT05 playlist";
         String customerId = "4";
         Integer songCount = 4;
+        AlbumTrackDao albumTrackDao = new AlbumTrackDao(dynamoDbMapper);
         Set<String> tags = new HashSet<>(Arrays.asList("PPT05 tags"));
-        //List<String> songList = new ArrayList<>(Arrays.asList("whereImFrom", "wahoo", "All Mirrors"));
+        List<AlbumTrack> songList = new ArrayList<>();
+        songList.add(albumTrackDao.getAlbumTrack("B07NJ3H27X", 1));
 
         Playlist playlist = new Playlist();
         playlist.setId(playListID);
@@ -71,6 +55,7 @@ public class PlayListDaoTest {
         playlist.setCustomerId(customerId);
         playlist.setSongCount(songCount);
         playlist.setTags(tags);
+        playlist.setSongList(songList);
 
         playlistDao.savePlaylist(playlist);
 
@@ -92,7 +77,7 @@ public class PlayListDaoTest {
     @Test
     public void savePlaylist_existingPlayList_updatesExistingRecordWithNewValues() {
         String playListID = "PPT05";
-        String playListName = "New PPT05 playlist";
+        String playListName = "PPT05 playlist";
         String customerId = "4";
         Integer songCount = 4;
         Set<String> tags = new HashSet<>(Arrays.asList("PPT05 tags", "more Tags", "Some More Tags"));
@@ -104,14 +89,24 @@ public class PlayListDaoTest {
         playlist.setSongCount(songCount);
         playlist.setTags(tags);
 
-        System.out.println("Playlist : " + playlist.getName());
         playlistDao.savePlaylist(playlist);
 
-        Playlist playlist1 = playlistDao.getPlaylist(playListID);
-        System.out.println("DB PlayList : " + playlist1.getName());
+        String updatedName = "Updated PPT05 playlist";
 
-        assertEquals(playlist.getName(), playlist1.getName(), "Expect the name of the PlayList to be " +
+        playlist.setName(updatedName);
+
+        playlistDao.savePlaylist(playlist);
+
+        assertEquals(playlist.getName(), updatedName, "Expect the name of the PlayList to be " +
                 "updated with the new Values");
+    }
+
+    @Test
+    public void savePlaylist_withNonExistentPlaylistId_throwsPlaylistNotFoundException() {
+        String invalidPlayListID = "ABCDEF";
+
+        assertThrows(PlaylistNotFoundException.class, () -> playlistDao.getPlaylist(invalidPlayListID));
+
     }
 
     private void deleteTestData() {

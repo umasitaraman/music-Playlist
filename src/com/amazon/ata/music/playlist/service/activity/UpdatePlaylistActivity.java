@@ -1,11 +1,13 @@
 package com.amazon.ata.music.playlist.service.activity;
 
+import com.amazon.ata.music.playlist.service.converters.ModelConverter;
 import com.amazon.ata.music.playlist.service.dynamodb.models.Playlist;
 import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeChangeException;
 import com.amazon.ata.music.playlist.service.exceptions.InvalidAttributeValueException;
 import com.amazon.ata.music.playlist.service.exceptions.PlaylistNotFoundException;
 import com.amazon.ata.music.playlist.service.models.PlaylistModel;
 import com.amazon.ata.music.playlist.service.models.requests.UpdatePlaylistRequest;
+import com.amazon.ata.music.playlist.service.models.results.CreatePlaylistResult;
 import com.amazon.ata.music.playlist.service.models.results.UpdatePlaylistResult;
 import com.amazon.ata.music.playlist.service.dynamodb.PlaylistDao;
 
@@ -14,6 +16,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Collections;
 
 /**
  * Implementation of the UpdatePlaylistActivity for the MusicPlaylistService's UpdatePlaylist API.
@@ -52,26 +56,28 @@ public class UpdatePlaylistActivity implements RequestHandler<UpdatePlaylistRequ
      * @return updatePlaylistResult result object containing the API defined {@link PlaylistModel}
      */
     @Override
-    public UpdatePlaylistResult handleRequest(final UpdatePlaylistRequest updatePlaylistRequest, Context context) {
+    public UpdatePlaylistResult handleRequest(final UpdatePlaylistRequest updatePlaylistRequest, Context context)
+            throws  PlaylistNotFoundException , InvalidAttributeChangeException {
         log.info("Received UpdatePlaylistRequest {}", updatePlaylistRequest);
+
+
+        if (!MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getCustomerId()) ||
+                !MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getName())) {
+            throw new InvalidAttributeValueException();
+        }
 
         Playlist playlistDB = playlistDao.getPlaylist(updatePlaylistRequest.getId());
 
-            if (updatePlaylistRequest.getId() == null) {
-                throw new PlaylistNotFoundException();
-            } else if (!MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getCustomerId()) ||
-                    !MusicPlaylistServiceUtils.isValidString(updatePlaylistRequest.getName())) {
-                throw new InvalidAttributeValueException();
-            } else if (!updatePlaylistRequest.getCustomerId().equals(playlistDB.getCustomerId())) {
-                throw new InvalidAttributeChangeException();
-            }
+        if (!updatePlaylistRequest.getCustomerId().equals(playlistDB.getCustomerId())) {
+            throw new InvalidAttributeChangeException();
+        }
 
-        return UpdatePlaylistResult.builder()
-                .withPlaylist(PlaylistModel.builder()
-                        .withId(updatePlaylistRequest.getId())
-                        .withCustomerId(updatePlaylistRequest.getCustomerId())
-                        .withName(updatePlaylistRequest.getName())
-                        .build())
-                .build();
+        playlistDB.setName(updatePlaylistRequest.getName());
+
+        playlistDao.savePlaylist(playlistDB);
+
+        PlaylistModel playlistModel = new ModelConverter().toPlaylistModel(playlistDB);
+
+        return UpdatePlaylistResult.builder().withPlaylist(playlistModel).build();
     }
 }

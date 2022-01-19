@@ -44,13 +44,14 @@ public class CreatePlaylistActivityTest {
                 .build();
 
         // WHEN
+        System.out.println(request.getTags());
         CreatePlaylistResult result = createPlaylistActivity.handleRequest(request, null);
 
 
         // THEN
         assertEquals(expectedName, result.getPlaylist().getName());
         assertEquals(expectedCustomerId, result.getPlaylist().getCustomerId());
-        assertEquals(expectedTags, result.getPlaylist().getTags());
+       assertEquals(expectedTags, result.getPlaylist().getTags());
     }
 
     @Test

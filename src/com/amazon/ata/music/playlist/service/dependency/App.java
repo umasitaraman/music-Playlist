@@ -78,7 +78,7 @@ public class App {
      */
     private DynamoDBMapper provideDynamoDBMapper() {
         if (null == dynamoDBMapper) {
-            dynamoDBMapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_WEST_2));
+            dynamoDBMapper = new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_EAST_2));
         }
         return dynamoDBMapper;
     }
