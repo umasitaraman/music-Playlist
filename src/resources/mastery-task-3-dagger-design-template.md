@@ -34,15 +34,28 @@ Remember that:
 List the class(es) that `App.java` provides that are **not** dependencies of other classes, that is, no other classes
  in the project depend on these classes
 
-* 
+* Not Dependencies means --> Their object is not created in other classes
+* GetPlaylistSongsActivity
+* AddSongToPlaylistActivity
+* UpdatePlaylistActivity
+* GetPlaylistActivity
+* CreatePlaylistActivity
 
 List the class(es) that `App.java` provides that **are** dependencies of other classes
 
-* 
+* DynamoDBMapper
+* AlbumTrackDao
+* PlaylistDao
 
 List the class(es) that `App.java` creates that have constructors we must annotate with `@Inject`
 
-* 
+* GetPlaylistActivity --> providePlaylistDao
+* UpdatePlaylistActivity --> providePlaylistDao
+* AddSongToPlaylistActivity --> providePlaylistDao(), provideAlbumTrackDao()
+* GetPlaylistSongsActivity --> providePlaylistDao
+* PlaylistDao --> provideDynamoDBMapper
+* AlbumTrackDao --> provideDynamoDBMapper
+* DynamoDBMapper --> 
 
 List the class(es) that `App.java` creates that we must provide in a Dagger module
 
@@ -60,29 +73,31 @@ your module, `DaoModule`, as indicated below. Use these names in
 your implementation as well)
 
 ```
-@______
-@______(______ = {______.class})
+@Singleton
+@Component(modules = {DaoModule.class})
 public interface ServiceComponent {
-    ______ provide______();
+    CreatePlaylistActivity provideCreatePlaylistActivity();
 
-    ______ provide______();
+    GetPlaylistActivity provideGetPlaylistActivity();
 
-    ______ provide______();
+    UpdatePlaylistActivity provideprovideUpdatePlaylistActivity();
 
-    ______ provide______();
+    AddSongToPlaylistActivity provideAddSongToPlaylistActivity();
 
-    ______ provide______();
+    GetPlaylistSongsActivity provideGetPlaylistSongsActivity();
 }
 ```
 
 ```
-@______
+@Module
 public class DaoModule {
-
-    @______
-    @______
-    public ______ provide______() {
-        // Implementation in milestone 2
+    @Singleton
+    @Provides
+    public PlaylistDao providePlaylistDao() {
+        
+    }
+    public AlbumTrackDao provideAlbumTrackDao() {
+        
     }
 }
 ```

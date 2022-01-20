@@ -5,6 +5,7 @@ import com.amazon.ata.music.playlist.service.exceptions.PlaylistNotFoundExceptio
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
+import javax.inject.Inject;
 import java.util.Objects;
 
 /**
@@ -18,6 +19,7 @@ public class PlaylistDao {
      *
      * @param dynamoDbMapper the {@link DynamoDBMapper} used to interact with the playlists table
      */
+    @Inject
     public PlaylistDao(DynamoDBMapper dynamoDbMapper) {
         this.dynamoDbMapper = dynamoDbMapper;
     }
