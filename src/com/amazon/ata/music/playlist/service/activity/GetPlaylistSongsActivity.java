@@ -54,28 +54,15 @@ public class GetPlaylistSongsActivity implements RequestHandler<GetPlaylistSongs
                                                             throws PlaylistNotFoundException {
         log.info("Received GetPlaylistSongsRequest {}", getPlaylistSongsRequest);
 
-        //        getPlaylistSongsActivity -> playlistDao : getPlayList(id)
-        //        playlistDao -> dynamoDB : lookup by playlist id
-        //        alt if playlist does not exist
-        //        dynamoDB --> playlistDao : return with no item data
-        //        playlistDao --> getPlaylistSongsActivity: throw PlayListNotFoundException
-        //        getPlaylistSongsActivity --> apiGateway: propagate PlaylistNotFoundException
-        //        apiGateway --> client: return 400 response
         Playlist playlist = playlistDao.getPlaylist(getPlaylistSongsRequest.getId());
 
-
-        //        alt if request.order is provided and is SHUFFLED
-        //        getPlaylistSongsActivity -> getPlaylistSongsActivity: shuffle song list
         if (getPlaylistSongsRequest.getOrder() == SongOrder.SHUFFLED) {
             Collections.shuffle(playlist.getSongList());
-        //        else else if request.order is provided and is REVERSED
-        //        getPlaylistSongsActivity -> getPlaylistSongsActivity: reverse song list
         } else if (getPlaylistSongsRequest.getOrder() == SongOrder.REVERSED) {
             Collections.reverse(playlist.getSongList());
         }
 
         List<SongModel> songModelList = new ModelConverter().toSongModelList(playlist.getSongList());
-        //getPlaylistSongsActivity -> getPlaylistSongsActivity: Create GetPlaylistSongsResult and set SongModel list
 
         return GetPlaylistSongsResult.builder()
                 .withSongList(songModelList)
